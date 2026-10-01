@@ -1,0 +1,20 @@
+{
+  "name": "@repo/services",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/nodemailer": "^6.4.17",
+    "dotenv-cli": "^11.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@repo/database": "workspace:*",
+    "@repo/logger": "workspace:*",
+    "bcryptjs": "^3.0.2",
+    "google-auth-library": "^10.5.0",
+    "nodemailer": "^7.0.6",
+    "zod": "^4.3.5"
+  }
+}
