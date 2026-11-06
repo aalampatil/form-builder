@@ -2,6 +2,7 @@
   "name": "trpc-monorepo",
   "private": true,
   "scripts": {
+    "prepare": "husky",
     "build": "dotenv -- turbo build",
     "dev": "dotenv -- turbo dev",
     "db:generate": "dotenv -- turbo db:generate",
@@ -11,7 +12,12 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
   },
+  "lint-staged": {
+    "*.{js,jsx,cjs,mjs,ts,tsx,json,jsonc,md,yaml,yml,css,scss,html}": "prettier --check"
+  },
   "devDependencies": {
+    "husky": "9",
+    "lint-staged": "15",
     "prettier": "^3.7.4",
     "turbo": "^2.7.2",
     "typescript": "5.9.2"

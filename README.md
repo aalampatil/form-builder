@@ -316,6 +316,12 @@ Fill these in before submitting to judges:
 - Public GitHub repo: `TODO_GITHUB_REPO_URL`
 - API docs: `TODO_SCALAR_DOCS_URL`
 
+## Git hooks
+
+`pnpm install` enables Husky through the root `prepare` script. Before each commit, lint-staged checks staged JavaScript, TypeScript, JSON, Markdown, YAML, CSS, and HTML files with the existing Prettier configuration. Formatting errors block the commit; the hook does not rewrite your files. The generated `pnpm-lock.yaml` is excluded through `.prettierignore`.
+
+Format reported files with `pnpm exec prettier --write <file>`, stage them again, and retry the commit. Re-enable hooks manually with `pnpm run prepare` when needed. Database integration tests and workspace type checks remain separate commands.
+
 ## Notes
 
 - Email is optional. If you set `SMTP_URL` + `EMAIL_FROM`, the platform will:

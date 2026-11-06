@@ -2,6 +2,7 @@
 
 # Dependencies
 node_modules
+.husky/_/
 .pnp
 .pnp.js
 
