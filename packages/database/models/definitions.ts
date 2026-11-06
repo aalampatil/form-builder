@@ -18,7 +18,7 @@ export const formsTable = builder.table("forms", {
   unique("forms_scope_unique").on(t.workspaceId, t.id),
   index("forms_creator_idx").on(t.creatorUserId),
   index("forms_published_version_idx").on(t.publishedVersionId),
-  index("forms_workspace_page_idx").on(t.workspaceId, t.createdAt.desc(), t.id.desc()).where(sql`${t.deletedAt} IS NULL`),
+  index("forms_workspace_page_idx").on(t.workspaceId, t.createdAt.desc().nullsFirst(), t.id.desc().nullsFirst()).where(sql`${t.deletedAt} IS NULL`),
   check("forms_slug_check", sql`${t.slug} ~ '^[a-z0-9]+(-[a-z0-9]+)*$'`),
 ]);
 
