@@ -2,6 +2,9 @@
   "name": "@repo/database",
   "version": "1.0.0",
   "scripts": {
+    "check-types": "tsc --noEmit",
+    "db:check": "drizzle-kit check",
+    "test:db": "tsx --test tests/integration.test.ts",
     "db:migrate": "dotenv -- drizzle-kit migrate",
     "db:generate": "dotenv -- drizzle-kit generate",
     "dev": "dotenv -- drizzle-kit studio --port 4984",
