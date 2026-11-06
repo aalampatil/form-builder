@@ -64,6 +64,13 @@
       "when": 1793979699818,
       "tag": "0008_cursor_sort_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793979876832,
+      "tag": "0009_guard_cascade_and_expiry",
+      "breakpoints": true
     }
   ]
 }
