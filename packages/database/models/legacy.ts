@@ -24,7 +24,8 @@ export const legacyFormsTable = pgTable(
 
     ownerId: uuid("owner_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => usersTable.id, { onDelete: "restrict" }),
+    // Legacy owner cascade is replaced by RESTRICT in the hardening migration.
 
     title: varchar("title", { length: 140 }).notNull(),
     description: text("description"),

@@ -6,7 +6,10 @@ import {
   boolean,
   text,
   pgEnum,
+  uniqueIndex,
+  check,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const userRoleEnum = pgEnum("user_role", ["CREATOR", "ADMIN"]);
 
@@ -24,10 +27,14 @@ export const usersTable = pgTable("users", {
 
   role: userRoleEnum("role").notNull().default("CREATOR"),
   lastLoginAt: timestamp("last_login_at"),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
 
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
-});
+}, (t) => [
+  uniqueIndex("users_normalized_email_unique").on(sql`lower(btrim(${t.email}))`),
+  check("users_email_normalized_check", sql`${t.email} = lower(btrim(${t.email}))`),
+]);
 
 export type SelectUser = typeof usersTable.$inferSelect;
 export type InsertUser = typeof usersTable.$inferInsert;

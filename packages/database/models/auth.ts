@@ -5,6 +5,7 @@ import {
   text,
   index,
   inet,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./user";
 
@@ -26,8 +27,9 @@ export const sessionsTable = pgTable(
     revokedAt: timestamp("revoked_at"),
   },
   (t) => ({
-    tokenHashIdx: index("sessions_token_hash_idx").on(t.tokenHash),
+    tokenHashIdx: uniqueIndex("sessions_token_hash_unique").on(t.tokenHash),
     userIdIdx: index("sessions_user_id_idx").on(t.userId),
+    expiryIdx: index("sessions_expiry_idx").on(t.expiresAt),
   }),
 );
 

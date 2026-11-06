@@ -30,7 +30,7 @@ class AuthService {
       .insert(usersTable)
       .values({
         fullName: input.fullName,
-        email: input.email.toLowerCase(),
+        email: input.email.trim().toLowerCase(),
         passwordHash,
       })
       .returning();
@@ -39,8 +39,8 @@ class AuthService {
   }
 
   async signIn(input: SignInInput): Promise<UserPublic> {
-    const email = input.email.toLowerCase();
-    const found = await db.select().from(usersTable).where(eq(usersTable.email, email)).limit(1);
+    const email = input.email.trim().toLowerCase();
+    const found = await db.select().from(usersTable).where(and(eq(usersTable.email, email), isNull(usersTable.deletedAt))).limit(1);
     const user = found[0];
     if (!user?.passwordHash) throw new Error("Invalid credentials");
 
@@ -50,9 +50,10 @@ class AuthService {
     const updated = await db
       .update(usersTable)
       .set({ lastLoginAt: new Date() })
-      .where(eq(usersTable.id, user.id))
+      .where(and(eq(usersTable.id, user.id), isNull(usersTable.deletedAt)))
       .returning();
 
+    if (!updated[0]) throw new Error("Invalid credentials");
     return toUserPublic(updated[0]!);
   }
 
@@ -92,6 +93,7 @@ class AuthService {
           eq(sessionsTable.tokenHash, tokenHash),
           gt(sessionsTable.expiresAt, new Date()),
           isNull(sessionsTable.revokedAt),
+          isNull(usersTable.deletedAt),
         ),
       )
       .limit(1);
