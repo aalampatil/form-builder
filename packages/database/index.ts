@@ -4,4 +4,6 @@ import { env } from "./env";
 
 export const db = drizzle(env.DATABASE_URL);
 export * from "drizzle-orm";
+export { withAuthorizedWorkspace } from "./tenant";
+export type { WorkspaceTransaction } from "./tenant";
 export default db;

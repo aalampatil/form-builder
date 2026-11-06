@@ -36,6 +36,13 @@
       "when": 1793979020620,
       "tag": "0004_typed_submissions",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793979070599,
+      "tag": "0005_lifecycle_and_isolation",
+      "breakpoints": true
     }
   ]
 }
