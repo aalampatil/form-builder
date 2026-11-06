@@ -22,6 +22,13 @@
       "when": 1793978763865,
       "tag": "0002_workspace_tenancy",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793978887083,
+      "tag": "0003_versioned_forms",
+      "breakpoints": true
     }
   ]
 }
