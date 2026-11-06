@@ -43,6 +43,13 @@
       "when": 1793979070599,
       "tag": "0005_lifecycle_and_isolation",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793979289827,
+      "tag": "0006_legacy_workspace_backfill",
+      "breakpoints": true
     }
   ]
 }
