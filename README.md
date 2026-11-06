@@ -14,6 +14,10 @@ Production-style form builder SaaS built on a Turborepo monorepo with **tRPC**, 
 
 See [database architecture](docs/database/architecture.md), [operations and validation](docs/database/operations.md), and the [commit ledger](docs/database/changes.md). Form-builder APIs, submission validation services, and UI development follow this database phase.
 
+## Theme direction
+
+The selected visual direction is **Japanese Ink**: warm paper, charcoal typography, restrained vermilion accents, and generous spacing. The [theme guide](docs/design/japanese-ink.md) documents light/dark tokens, typography, component states, layout, motion, accessibility, and future implementation. It includes a [palette reference](docs/design/japanese-ink-palette.svg). The guide defines the direction; applying it to the UI is a separate step.
+
 ## Apps & packages
 
 - `apps/web`: Next.js dashboard + public form UI (frontend is intentionally minimal for now)

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" role="img" aria-labelledby="title description">
+  <title id="title">Japanese Ink theme palette</title>
+  <desc id="description">Light mode combines warm paper, cream surfaces, charcoal ink, warm gray, and vermilion. Dark mode combines charcoal, a warm dark surface, pale ink, muted sand, and pale vermilion. Every swatch includes its name and hexadecimal color.</desc>
+  <g font-family="system-ui, sans-serif">
+    <rect width="960" height="200" fill="#F6F2EA"/>
+    <text x="28" y="36" fill="#252521" font-size="20" font-weight="600">Japanese Ink / Light</text>
+    <g stroke="#827A6E" stroke-width="1">
+      <rect x="28" y="56" width="164" height="72" rx="6" fill="#F6F2EA"/>
+      <rect x="212" y="56" width="164" height="72" rx="6" fill="#FFFCF7"/>
+      <rect x="396" y="56" width="164" height="72" rx="6" fill="#252521"/>
+      <rect x="580" y="56" width="164" height="72" rx="6" fill="#68645D"/>
+      <rect x="764" y="56" width="164" height="72" rx="6" fill="#9F382C"/>
+    </g>
+    <g fill="#252521" font-size="14">
+      <text x="28" y="152">Paper / background</text>
+      <text x="212" y="152">Cream / card</text>
+      <text x="396" y="152">Charcoal / ink</text>
+      <text x="580" y="152">Warm gray / muted ink</text>
+      <text x="764" y="152">Vermilion / seal</text>
+    </g>
+    <g fill="#68645D" font-family="monospace" font-size="14">
+      <text x="28" y="176">#F6F2EA</text>
+      <text x="212" y="176">#FFFCF7</text>
+      <text x="396" y="176">#252521</text>
+      <text x="580" y="176">#68645D</text>
+      <text x="764" y="176">#9F382C</text>
+    </g>
+    <rect y="200" width="960" height="200" fill="#191B19"/>
+    <text x="28" y="236" fill="#ECE6D8" font-size="20" font-weight="600">Japanese Ink / Dark</text>
+    <g stroke="#79816F" stroke-width="1">
+      <rect x="28" y="256" width="164" height="72" rx="6" fill="#191B19"/>
+      <rect x="212" y="256" width="164" height="72" rx="6" fill="#222521"/>
+      <rect x="396" y="256" width="164" height="72" rx="6" fill="#ECE6D8"/>
+      <rect x="580" y="256" width="164" height="72" rx="6" fill="#B6B09F"/>
+      <rect x="764" y="256" width="164" height="72" rx="6" fill="#E1947C"/>
+    </g>
+    <g fill="#ECE6D8" font-size="14">
+      <text x="28" y="352">Charcoal / background</text>
+      <text x="212" y="352">Warm dark / card</text>
+      <text x="396" y="352">Pale ink / foreground</text>
+      <text x="580" y="352">Sand / muted ink</text>
+      <text x="764" y="352">Pale vermilion / seal</text>
+    </g>
+    <g fill="#B6B09F" font-family="monospace" font-size="14">
+      <text x="28" y="376">#191B19</text>
+      <text x="212" y="376">#222521</text>
+      <text x="396" y="376">#ECE6D8</text>
+      <text x="580" y="376">#B6B09F</text>
+      <text x="764" y="376">#E1947C</text>
+    </g>
+  </g>
+</svg>
