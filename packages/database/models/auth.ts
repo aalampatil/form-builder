@@ -1,12 +1,4 @@
-import {
-  pgTable,
-  uuid,
-  timestamp,
-  text,
-  index,
-  inet,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { pgTable, uuid, timestamp, text, index, inet, uniqueIndex } from "drizzle-orm/pg-core";
 import { usersTable } from "./user";
 
 export const sessionsTable = pgTable(
@@ -35,4 +27,3 @@ export const sessionsTable = pgTable(
 
 export type SelectSession = typeof sessionsTable.$inferSelect;
 export type InsertSession = typeof sessionsTable.$inferInsert;
-

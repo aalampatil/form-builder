@@ -13,28 +13,32 @@ import { sql } from "drizzle-orm";
 
 export const userRoleEnum = pgEnum("user_role", ["CREATOR", "ADMIN"]);
 
-export const usersTable = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+export const usersTable = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
 
-  fullName: varchar("full_name", { length: 80 }).notNull(),
+    fullName: varchar("full_name", { length: 80 }).notNull(),
 
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: boolean("email_verified").default(false),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    emailVerified: boolean("email_verified").default(false),
 
-  profileImageUrl: text("profile_image_url"),
+    profileImageUrl: text("profile_image_url"),
 
-  passwordHash: text("password_hash"),
+    passwordHash: text("password_hash"),
 
-  role: userRoleEnum("role").notNull().default("CREATOR"),
-  lastLoginAt: timestamp("last_login_at"),
-  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    role: userRoleEnum("role").notNull().default("CREATOR"),
+    lastLoginAt: timestamp("last_login_at"),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
 
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
-}, (t) => [
-  uniqueIndex("users_normalized_email_unique").on(sql`lower(btrim(${t.email}))`),
-  check("users_email_normalized_check", sql`${t.email} = lower(btrim(${t.email}))`),
-]);
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
+  },
+  (t) => [
+    uniqueIndex("users_normalized_email_unique").on(sql`lower(btrim(${t.email}))`),
+    check("users_email_normalized_check", sql`${t.email} = lower(btrim(${t.email}))`),
+  ],
+);
 
 export type SelectUser = typeof usersTable.$inferSelect;
 export type InsertUser = typeof usersTable.$inferInsert;

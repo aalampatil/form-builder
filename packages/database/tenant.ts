@@ -30,7 +30,9 @@ export async function withAuthorizedWorkspace<T>(
       throw new Error("Workspace transactions require a non-owner builder_runtime connection");
     }
     await transaction.execute(sql`SELECT set_config('app.workspace_id', ${workspaceId}, true)`);
-    await transaction.execute(sql`SELECT set_config('app.actor_user_id', ${actorUserId ?? ""}, true)`);
+    await transaction.execute(
+      sql`SELECT set_config('app.actor_user_id', ${actorUserId ?? ""}, true)`,
+    );
     return operation(transaction);
   });
 }

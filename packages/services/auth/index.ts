@@ -40,7 +40,11 @@ class AuthService {
 
   async signIn(input: SignInInput): Promise<UserPublic> {
     const email = input.email.trim().toLowerCase();
-    const found = await db.select().from(usersTable).where(and(eq(usersTable.email, email), isNull(usersTable.deletedAt))).limit(1);
+    const found = await db
+      .select()
+      .from(usersTable)
+      .where(and(eq(usersTable.email, email), isNull(usersTable.deletedAt)))
+      .limit(1);
     const user = found[0];
     if (!user?.passwordHash) throw new Error("Invalid credentials");
 
@@ -113,4 +117,3 @@ class AuthService {
 }
 
 export default AuthService;
-

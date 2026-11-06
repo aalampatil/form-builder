@@ -1,5 +1,18 @@
 // Compatibility-only mapping of existing public tables. Do not use for new writes.
-import { pgEnum, pgTable, uuid, varchar, timestamp, boolean, text, jsonb, integer, index, uniqueIndex, inet } from "drizzle-orm/pg-core";
+import {
+  pgEnum,
+  pgTable,
+  uuid,
+  varchar,
+  timestamp,
+  boolean,
+  text,
+  jsonb,
+  integer,
+  index,
+  uniqueIndex,
+  inet,
+} from "drizzle-orm/pg-core";
 import { usersTable } from "./user";
 export const legacyFormVisibilityEnum = pgEnum("form_visibility", ["PUBLIC", "UNLISTED"]);
 export const legacyFormStatusEnum = pgEnum("form_status", ["DRAFT", "PUBLISHED", "ARCHIVED"]);

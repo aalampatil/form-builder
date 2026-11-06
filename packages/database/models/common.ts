@@ -13,7 +13,14 @@ export const object = (name: string) =>
   jsonb(name).$type<Record<string, unknown>>().notNull().default({});
 
 export const storageKinds = [
-  "TEXT", "NUMBER", "BOOLEAN", "DATE", "DATETIME", "JSON",
-  "SINGLE_SELECT", "MULTI_SELECT", "FILE",
+  "TEXT",
+  "NUMBER",
+  "BOOLEAN",
+  "DATE",
+  "DATETIME",
+  "JSON",
+  "SINGLE_SELECT",
+  "MULTI_SELECT",
+  "FILE",
 ] as const;
 export type StorageKind = (typeof storageKinds)[number];
