@@ -2,15 +2,17 @@
 
 Production-style form builder SaaS built on a Turborepo monorepo with **tRPC**, **Zod**, **Drizzle ORM (Postgres)**, and **Scalar (OpenAPI docs)**.
 
-## What’s implemented (backend-first)
+## Phase 1: database foundation
 
 - Auth for creators: email/password + httpOnly cookie sessions (`fb_session`)
-- Forms: create/update/list, publish/unpublish, archive, field schema upsert
-- Public form API: fetch published form by slug + submit responses (validated via per-form **Zod** schema)
-- Rate limiting: basic IP+slug limiter for public submissions
-- Responses: store high-volume responses + answer rows; list responses; basic per-field analytics
-- API docs: OpenAPI generated from tRPC + Scalar UI at `/docs`
-- Seed data: demo creator + admin + 3 themed forms + sample responses
+- Workspace ownership, membership roles, composite tenant constraints, and forced row-level security
+- Drafts, immutable published form versions, steps, fields, options, and conditional-rule definitions
+- Typed submission answers, relational selections/files, lifecycle guards, retention metadata, and audit records
+- Additive Drizzle migrations preserving legacy forms and responses
+- PostgreSQL integration tests for migrations, integrity, isolation, concurrency, and query plans
+- Optional development draft fixture without login credentials
+
+See [database architecture](docs/database/architecture.md), [operations and validation](docs/database/operations.md), and the [commit ledger](docs/database/changes.md). Form-builder APIs, submission validation services, and UI development follow this database phase.
 
 ## Apps & packages
 
@@ -24,12 +26,12 @@ Production-style form builder SaaS built on a Turborepo monorepo with **tRPC**, 
 - `packages/trpc`: tRPC server router + client types
 - `packages/services`: backend services (auth, forms, responses, email)
 
-## Proposed database ER diagram
+## Database ER diagram (Phase 1)
 
-Phase 1 architecture, pending approval. Paste the code below into an **Entity Relationship Diagram** in Eraser.io. It uses [Eraser's ERD syntax](https://docs.eraser.io/erd-syntax). See the [database architecture proposal](docs/database/architecture.md) for full constraints and migration decisions.
+Paste the code below into an **Entity Relationship Diagram** in Eraser.io. It uses [Eraser's ERD syntax](https://docs.eraser.io/erd-syntax). New tables live in the `builder` schema; users and sessions remain in `public`. See the [database architecture](docs/database/architecture.md) for full constraints and migration decisions.
 
 ```text
-// Proposed schema; not yet implemented.
+// Phase 1 logical schema; implemented through Drizzle migrations.
 // Relationships below show individual FK paths for readability.
 // Implementation uses composite workspace/version/submission FKs.
 // Nullable columns, composite uniqueness, checks, RLS, and triggers
@@ -277,12 +279,13 @@ cp apps/web/.env.local.example apps/web/.env.local
 pnpm install
 ```
 
-### 4) Migrate + seed
+### 4) Migrate
 
 ```bash
 pnpm db:migrate
-pnpm db:seed
 ```
+
+Use a privileged migration connection for this command. Before deploying, follow the [runtime role and legacy rollout instructions](docs/database/operations.md). Development seeding is optional: `pnpm db:seed` requires `ALLOW_DATABASE_SEED=true`, a database name ending in `_dev` or `_test`, and a non-production environment.
 
 ### 5) Run dev
 
@@ -291,19 +294,14 @@ pnpm dev
 ```
 
 Defaults:
+
 - API: `http://localhost:8000`
 - Web: `http://localhost:3001`
 - Drizzle Studio: `http://localhost:4984`
 
-## Demo credentials (seeded)
+## Development database fixture
 
-- Creator: `demo@formcraft.dev` / `DemoPass123!`
-- Admin: `admin@formcraft.dev` / `AdminPass123!`
-
-Seeded demo forms (slugs):
-- `anime-hype-quiz` (public)
-- `interstellar-feedback` (unlisted)
-- `pixel-gaming-survey` (public)
+The optional seed creates a `development` workspace and an unpublished `development-feedback` draft. It creates no passwords or admin login credentials.
 
 ## API docs (Scalar)
 
