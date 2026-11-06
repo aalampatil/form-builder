@@ -2,6 +2,8 @@
 
 Production-style form builder SaaS built on a Turborepo monorepo with **tRPC**, **Zod**, **Drizzle ORM (Postgres)**, and **Scalar (OpenAPI docs)**.
 
+Start with the [project map and rough implementation plan](docs/project-plan.md) to see how the apps, API, services, database, theme, and user journeys connect, along with the current gaps and build order.
+
 ## Phase 1: database foundation
 
 - Auth for creators: email/password + httpOnly cookie sessions (`fb_session`)
