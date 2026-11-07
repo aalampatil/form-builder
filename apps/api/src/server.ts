@@ -1,6 +1,7 @@
 import express from "express";
 import { logger } from "@repo/logger";
 import cors from "cors";
+import { clerkMiddleware, getAuth } from "@clerk/express";
 
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { generateOpenApiDocument, createOpenApiExpressMiddleware } from "trpc-to-openapi";
@@ -13,27 +14,22 @@ import { env } from "./env";
 export const app = express();
 app.set("trust proxy", 1);
 const openApiDocument = generateOpenApiDocument(serverRouter, {
-  title: "Form Builder API",
+  title: "Sumikami API",
   version: "1.0.0",
   baseUrl: env.BASE_URL.concat("/api"),
+  securitySchemes: { Authorization: { type: "http", scheme: "bearer", bearerFormat: "JWT" } },
 });
 
-if (env.NODE_ENV !== "prod") {
-  app.use(
-    cors({
-      origin: "*",
-    }),
-  );
-}
+app.use(cors({ origin: env.AUTHORIZED_PARTIES, credentials: true }));
 
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  return res.json({ message: "Streamyst is up and running..." });
+  return res.json({ message: "Sumikami API is running" });
 });
 
 app.get("/health", (req, res) => {
-  return res.json({ message: "Streamyst server is healthy", healthy: true });
+  return res.json({ message: "Sumikami API is healthy", healthy: true });
 });
 
 logger.debug(`openapi.json: ${env.BASE_URL}/openapi.json`);
@@ -43,6 +39,21 @@ app.get("/openapi.json", (req, res) => {
 
 logger.debug(`docs: ${env.BASE_URL}/docs`);
 app.use("/docs", apiReference({ url: "/openapi.json" }));
+
+app.use(
+  clerkMiddleware({
+    secretKey: env.CLERK_SECRET_KEY,
+    publishableKey: env.CLERK_PUBLISHABLE_KEY,
+    authorizedParties: env.AUTHORIZED_PARTIES,
+  }),
+);
+app.use((req, res, next) => {
+  if (req.headers.authorization && !getAuth(req).isAuthenticated) {
+    res.status(401).json({ error: "Invalid or expired authentication token" });
+    return;
+  }
+  next();
+});
 
 app.use(
   "/api",

@@ -1,21 +1,32 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
-import { authService } from "./services";
-import { parseCookies } from "./utils/cookies";
+import { getAuth } from "@clerk/express";
+import { IdentityAccessError } from "@repo/services/auth/clerk";
+import { TRPCError } from "@trpc/server";
+import { identityService } from "./services";
+import type { UserPublic } from "@repo/services/auth/model";
 
-export const SESSION_COOKIE_NAME = "fb_session";
+export interface Context {
+  req: CreateExpressContextOptions["req"];
+  res: CreateExpressContextOptions["res"];
+  user: UserPublic | null;
+}
 
-export async function createContext(opts: CreateExpressContextOptions) {
-  const cookies = parseCookies(opts.req.headers);
-  const token = cookies[SESSION_COOKIE_NAME];
-
-  const session = token ? await authService.getSessionByToken(token) : null;
+export async function createContext(opts: CreateExpressContextOptions): Promise<Context> {
+  const authentication = getAuth(opts.req);
+  let user: UserPublic | null = null;
+  if (authentication.isAuthenticated && authentication.userId) {
+    try {
+      user = await identityService.resolveUser(authentication.userId);
+    } catch (error) {
+      if (error instanceof IdentityAccessError)
+        throw new TRPCError({ code: "FORBIDDEN", message: error.reason });
+      throw error;
+    }
+  }
 
   return {
     req: opts.req,
     res: opts.res,
-    user: session?.user ?? null,
-    sessionToken: token ?? null,
+    user,
   };
 }
-
-export type Context = Awaited<ReturnType<typeof createContext>>;

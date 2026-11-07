@@ -12,7 +12,9 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "db:migrate:prod": "pnpm --filter @repo/database db:migrate:prod"
+    "db:migrate:prod": "pnpm --filter @repo/database db:migrate:prod",
+    "auth:import:clerk:dev": "dotenv -e apps/api/.env.local --no-expand -o -- pnpm --filter @repo/services auth:import:clerk",
+    "dev:auth": "turbo run dev --filter=web --filter=@repo/api"
   },
   "lint-staged": {
     "*.{js,jsx,cjs,mjs,ts,tsx,json,jsonc,md,yaml,yml,css,scss,html}": "prettier --check"

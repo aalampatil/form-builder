@@ -3,6 +3,10 @@
   "license": "MIT",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "auth:import:clerk": "tsx auth/import-clerk-users.ts",
+    "test:auth": "tsx --test auth/clerk.integration.test.ts"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
