@@ -322,6 +322,22 @@ Fill these in before submitting to judges:
 - Public GitHub repo: `TODO_GITHUB_REPO_URL`
 - API docs: `TODO_SCALAR_DOCS_URL`
 
+## Important commands
+
+Run these from the project root:
+
+| Command                                 | Purpose                                                                                         |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `pnpm dev`                              | Start the development processes                                                                 |
+| `pnpm db:generate`                      | Generate migrations from the Drizzle schema; does not apply them                                |
+| `pnpm db:migrate`                       | Apply pending migrations using the default environment setup                                    |
+| `pnpm db:migrate:prod --check`          | Validate the root `.env.production` connection configuration without connecting to the database |
+| `pnpm db:migrate:prod`                  | Apply pending migrations using `DATABASE_URL` explicitly read from the root `.env.production`   |
+| `pnpm --filter @repo/database db:check` | Check the Drizzle migration journal/snapshots                                                   |
+| `pnpm --filter @repo/database test:db`  | Run integration tests with an explicitly supplied disposable `TEST_DATABASE_URL`                |
+
+The production migration command stops if its file or URL is missing, overrides an existing shell `DATABASE_URL`, and preserves literal dollar signs in credentials. It runs the database package directly without Turbo caching. `--check` validates configuration only; it does not verify connectivity or pending migrations. See the [database operations guide](docs/database/operations.md) before applying changes to a populated database. The [2026-11-07 migration record](docs/database/migration-runs/2026-11-07.md) documents the local DNS issue; this command does not change DNS settings.
+
 ## Git hooks
 
 `pnpm install` enables Husky through the root `prepare` script. Before each commit, lint-staged checks staged JavaScript, TypeScript, JSON, Markdown, YAML, CSS, and HTML files with the existing Prettier configuration. Formatting errors block the commit; the hook does not rewrite your files. The generated `pnpm-lock.yaml` is excluded through `.prettierignore`.

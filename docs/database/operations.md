@@ -30,7 +30,16 @@ Use the existing migration command from the repository root:
 pnpm db:migrate
 ```
 
-This command uses `DATABASE_URL`. Supply the privileged **migration** connection only for that process; never use a privileged migration credential for new tenant request handling. Migrations require schema/table/function privileges and permission to create/configure two NOLOGIN group roles. If your managed PostgreSQL account cannot create roles, an administrator must provision the roles before migrating. Review existing identically named roles and inherited grants; do not reuse roles that hold unrelated privileges.
+For production, explicitly select the root `.env.production` file:
+
+```sh
+pnpm db:migrate:prod --check
+pnpm db:migrate:prod
+```
+
+The first command validates that the file contains a PostgreSQL `DATABASE_URL` without opening a connection. The second calls Drizzle directly from the database package, using that file's URL even if the shell has another `DATABASE_URL`. It preserves literal dollar signs, fails when the file/URL is missing, and does not run through Turbo caching. The environment file must remain untracked. A functioning DNS resolver and database connection are still required.
+
+Supply the privileged **migration** connection only for the migration process; never use a privileged migration credential for new tenant request handling. Migrations require schema/table/function privileges and permission to create/configure two NOLOGIN group roles. If your managed PostgreSQL account cannot create roles, an administrator must provision the roles before migrating. Review existing identically named roles and inherited grants; do not reuse roles that hold unrelated privileges.
 
 Do not edit applied migrations, delete journal rows, use `drizzle-kit push` in production, or remove compatibility models because the old services were deleted. Future Drizzle generation compares snapshots, not the live catalog: it cannot validate custom SQL protections. Review generated diffs and run the PostgreSQL suite after schema changes. The original migrations/snapshots remain intact.
 
