@@ -10,7 +10,7 @@ Start with the [project map and rough implementation plan](docs/project-plan.md)
 
 ## Phase 1: database foundation
 
-- Auth for creators: email/password + httpOnly cookie sessions (`fb_session`)
+- Clerk development authentication with stable local user UUIDs and independent API verification; [setup and rollout guide](docs/auth/clerk-setup.md)
 - Workspace ownership, membership roles, composite tenant constraints, and forced row-level security
 - Drafts, immutable published form versions, steps, fields, options, and conditional-rule definitions
 - Typed submission answers, relational selections/files, lifecycle guards, retention metadata, and audit records
@@ -329,6 +329,8 @@ Fill these in before submitting to judges:
 - API docs: `TODO_SCALAR_DOCS_URL`
 
 ## Important commands
+
+Clerk development: run `pnpm dev:auth` to start web/API, `pnpm --filter web test:auth:e2e` for browser checks, and `pnpm auth:import:clerk:dev` for a local legacy-user import dry run. See the [Clerk setup guide](docs/auth/clerk-setup.md) for the local database, environment files, identity tests and production rollout boundary.
 
 Run these from the project root:
 

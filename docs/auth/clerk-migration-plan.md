@@ -1,8 +1,8 @@
 # Clerk migration plan
 
-Status: proposed; awaiting approval before Clerk initialization or changes to authentication code.
+Status: approved and implemented for development. See [setup and verification](clerk-setup.md). Production identity import and session cutover remain separate rollout actions.
 
-The user approved the initial Clerk setup checklist. Their existing-authentication instructions additionally require migration-plan approval before replacing an existing authentication system. This repository has custom authentication, so that checkpoint applies.
+The user approved the initial checklist and then explicitly approved this plan after the existing custom authentication was identified. The sections below record the approved design and rollout boundaries.
 
 ## Inspection findings
 
@@ -77,6 +77,6 @@ Rollback is a deliberate release decision. Before production cutover, preserve t
 - New migration applies to clean and upgraded disposable databases; production records remain untouched during setup.
 - Start the web app and API with the completed integration, verify the end-to-end flow, document remaining deployment/claim steps, and commit coherent changes without secrets or generated local keys.
 
-## Approval requested
+## Approved scope
 
-Approve this additive migration to Clerk, including the identity mapping, replacement of custom password/cookie endpoints after verification, required sign-in again at cutover, and repair of stale auth/router imports needed to start the app. Setup and testing will use development Clerk resources; a production identity import/session cutover is a separate rollout action requiring explicit authorization.
+Approval covers the additive mapping, development replacement of custom password/cookie endpoints, required sign-in again at eventual cutover, and repair of stale imports needed to start the app. Setup and tests use development resources. Production identity import and session cutover still require explicit authorization and were not performed by this development setup.

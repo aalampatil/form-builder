@@ -101,7 +101,7 @@ The full [database architecture](database/architecture.md) and [Eraser ER diagra
 ### Account and workspace access
 
 ```text
-Sign in -> resolve cookie session -> identify user
+Sign in -> verify Clerk session/token -> resolve local UUID
         -> resolve owned/joined workspaces through trusted server code
         -> check owner/membership and requested action
         -> open a workspace-scoped database transaction
@@ -170,15 +170,15 @@ The creator's dashboard light/dark preference is separate from a published form'
 | Area                    | Current state                                                                                                              |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Database foundation     | Implemented: schema, migrations, tenant/lifecycle protections, legacy preservation, and PostgreSQL integration tests       |
-| Existing authentication | User/session service code and request-context plumbing exist; complete application integration still needs verification    |
+| Existing authentication | Clerk development web/API integration is verified; production identity import and session cutover remain separate          |
 | Workspace authorization | Ownership/membership schema exists; discovery, capability enforcement, and management APIs are planned                     |
 | Form/submission APIs    | Need services and routes aligned with the versioned schema                                                                 |
-| Web app                 | Next.js scaffold, tRPC/provider setup and shared UI components exist; full product journeys are planned                    |
+| Web app                 | Clerk sign-in/up and protected account screen are verified; form-builder product journeys are planned                      |
 | Japanese Ink theme      | Specification and palette exist; visual implementation is planned                                                          |
 | Sumikami brand          | Product identity, palette, logo briefs and typography direction are documented; logo assets and UI integration are planned |
 | Git hooks               | Husky checks staged-file formatting through lint-staged and Prettier                                                       |
 
-Some existing router and user-service files still reference removed form/response or Google OAuth modules. Repair those references before treating the whole application as buildable. Presence of a route file does not establish a working end-to-end feature. The database test result is separate from the full application build.
+The stale legacy auth/router imports were repaired during the approved Clerk integration. Express and Next.js builds and the development sign-up/API/sign-out/returning-sign-in flow now pass. Form endpoints remain unimplemented against the new schema; an empty public namespace does not imply usable respondent APIs. See the [Clerk setup guide](auth/clerk-setup.md) for verification and production rollout boundaries.
 
 Database runtime credentials, forced RLS, transaction context, privileged migration connections, retention, and legacy cutover procedures are documented in the [operations guide](database/operations.md).
 
@@ -187,7 +187,7 @@ Database runtime credentials, forced RLS, transaction context, privileged migrat
 | Stage                                        | Work                                                                                                                                            | Completion checkpoint                                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | 1. Database foundation                       | Versioned definitions, tenant scope, answer integrity, migrations and tests                                                                     | Completed foundation; deployment-specific rollout still follows the operations guide              |
-| 2. Application baseline and workspace access | Repair stale imports, verify sign-in/session behavior, provision restricted connections, implement workspace discovery and capability checks    | A signed-in user can access only authorized workspace operations; application checks pass         |
+| 2. Application baseline and workspace access | Extend the verified Clerk/local-identity baseline with production connection provisioning, workspace discovery and capability checks            | A signed-in user can access only authorized workspace operations; application checks pass         |
 | 3. Draft and publishing services             | Typed API contracts, form CRUD, field/step editing, revision checks, full-definition validation and publication                                 | A creator publishes a valid form and can edit a new draft without changing that published version |
 | 4. Public intake and response retrieval      | Safe slug resolution, respondent access/continuation rules, answer validation, completion, idempotency and paginated results                    | A respondent submits once despite retries, and an authorized creator reads the stored answers     |
 | 5. First usable interface                    | Build the dashboard, basic builder, respondent flow and results screen with Sumikami product components and an initial Japanese Ink form preset | The first product journey works through the browser in both supported product light/dark modes    |

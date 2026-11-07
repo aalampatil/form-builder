@@ -12,6 +12,8 @@ The architecture document and README's Eraser code describe the logical model. A
 
 ## Migration inventory
 
+The subsequent Clerk integration adds `0010_clerk_identity_mapping`, a nullable unique external identity column on `public.users`. See the [Clerk setup guide](../auth/clerk-setup.md). It was applied only to the isolated development/test databases during setup; the recorded production run below remains `0000`–`0009`.
+
 | Migration                        | Change                                                                                                                   |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `0000`, `0001`                   | Original history, unchanged                                                                                              |
