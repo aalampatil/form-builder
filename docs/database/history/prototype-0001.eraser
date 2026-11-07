@@ -1,0 +1,108 @@
+// Historical prototype schema after migration 0001, before Phase 1 architecture.
+// These are the old public tables; this is not the current runtime design.
+// Composite FK paths are shown per column for diagram readability.
+
+users {
+  id uuid pk not_null
+  full_name varchar(80) not_null
+  email varchar(255) not_null
+  email_verified boolean nullable
+  profile_image_url text nullable
+  password_hash text nullable
+  role user_role not_null
+  last_login_at timestamp nullable
+  created_at timestamp nullable
+  updated_at timestamp nullable
+}
+
+sessions {
+  id uuid pk not_null
+  user_id uuid not_null
+  token_hash text not_null
+  ip inet nullable
+  user_agent text nullable
+  created_at timestamp not_null
+  expires_at timestamp not_null
+  revoked_at timestamp nullable
+}
+
+themes {
+  id uuid pk not_null
+  owner_id uuid nullable
+  name varchar(120) not_null
+  description text nullable
+  category varchar(60) nullable
+  cover_image_url text nullable
+  palette jsonb not_null
+  typography jsonb not_null
+  extras jsonb not_null
+  created_at timestamp not_null
+  updated_at timestamp nullable
+}
+
+form_fields {
+  id uuid pk not_null
+  form_id uuid not_null
+  key varchar(80) not_null
+  type field_type not_null
+  label varchar(160) not_null
+  help_text text nullable
+  placeholder varchar(180) nullable
+  required boolean not_null
+  order integer not_null
+  config jsonb not_null
+  created_at timestamp not_null
+  updated_at timestamp nullable
+}
+
+forms {
+  id uuid pk not_null
+  owner_id uuid not_null
+  title varchar(140) not_null
+  description text nullable
+  slug varchar(120) not_null
+  status form_status not_null
+  visibility form_visibility not_null
+  theme_id uuid nullable
+  settings jsonb not_null
+  password_hash text nullable
+  published_at timestamp nullable
+  unpublished_at timestamp nullable
+  archived_at timestamp nullable
+  expires_at timestamp nullable
+  response_limit integer nullable
+  allow_multiple_submissions_per_ip boolean not_null
+  created_at timestamp not_null
+  updated_at timestamp nullable
+}
+
+form_response_answers {
+  id uuid pk not_null
+  response_id uuid not_null
+  field_id uuid nullable
+  field_key text not_null
+  value jsonb not_null
+  created_at timestamp not_null
+}
+
+form_responses {
+  id uuid pk not_null
+  form_id uuid not_null
+  respondent_email text nullable
+  ip inet nullable
+  user_agent text nullable
+  status response_status not_null
+  submitted_at timestamp nullable
+  answers_snapshot jsonb not_null
+  meta jsonb not_null
+  created_at timestamp not_null
+}
+
+sessions.user_id > users.id
+themes.owner_id > users.id
+form_fields.form_id > forms.id
+forms.owner_id > users.id
+forms.theme_id > themes.id
+form_response_answers.response_id > form_responses.id
+form_response_answers.field_id > form_fields.id
+form_responses.form_id > forms.id

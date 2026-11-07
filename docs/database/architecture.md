@@ -1,16 +1,25 @@
-# Phase 1 database architecture proposal
+# Sumikami database architecture
 
-Status: approved and implemented for Phase 1. See [implementation and operations](operations.md) for the migration inventory, runtime role setup, verification, and limits. This document records the approved design; the operations document describes its concrete rollout.
+Status: implemented for Phase 1 and updated for the approved Clerk development integration. The operations guide describes deployment boundaries; the history archive preserves the earlier design.
 
-## Repository findings
+## Current schema and design history
 
-- Retain PostgreSQL 15, Drizzle ORM 0.45.x, drizzle-kit 0.31.x, node-postgres, TypeScript, pnpm, and Turborepo. No new database, ORM, or hosted service is needed.
-- `packages/database/schema.ts` exports model definitions. `drizzle.config.ts` reads that entry point and writes SQL, snapshots, and a migration journal under `drizzle/`.
-- Existing migrations `0000` and `0001` create users, sessions, themes, mutable forms/fields, responses, and JSON answers. Preserve these migrations unchanged.
-- Users and cookie-session authentication already exist. Preserve their exports and authentication contract; workspace permissions are distinct from the existing platform-wide user role.
-- At inspection, form, response, and theme model files and several services/routes were already deleted in the working tree. Schema exports and the seed still reference those files. These are pre-existing inconsistencies, not changes made for this proposal.
-- No repository `AGENTS.md` was found. No database tests or dedicated database type-check script currently exist. Dependencies are installed. PostgreSQL availability and actual deployed data have not been inspected.
-- The README describes an earlier application state and is not an authoritative inventory of the current working tree.
+The schema is implemented through migration `0010_clerk_identity_mapping`. It contains **22 application tables**: 15 core tables in `builder` and 7 identity/compatibility tables in `public`. Clerk is an external authentication service, not another PostgreSQL table. Drizzle migration metadata is excluded from that count.
+
+See the [old-to-current comparison](design-evolution.md), [original Phase 1 plan](history/phase-1-original-design.md), and [historical prototype ERD](history/prototype-0001.eraser) for how the plan changed. Historical inspection findings are preserved in that archive instead of being presented as current limitations.
+
+- PostgreSQL, Drizzle ORM, node-postgres, TypeScript and the existing monorepo remain the persistence stack.
+- `packages/database/schema.ts` exports the current models plus explicitly prefixed legacy mappings. Existing migrations and snapshots remain intact.
+- Clerk owns current development sign-in/session handling; local UUID users, platform roles and workspace memberships remain application-owned.
+- The latest mapping migration was verified on isolated development/test databases. The recorded production run is `0000`–`0009`; current live production state was not queried for this documentation update.
+
+## Clerk identity mapping
+
+`public.users.id` remains the UUID primary key used by ownership, memberships, creator/respondent attribution and audit references. `public.users.clerk_user_id` is a nullable unique text column added by migration `0010`. It maps a verified external Clerk subject to that same local identity; it is not a cross-service SQL foreign key.
+
+On reviewed imports, Clerk stores the old local UUID as `externalId`, while the local row stores the returned Clerk ID. New identities are provisioned idempotently with the local `CREATOR` default. Email collisions require reconciliation; they do not silently link accounts or promote roles. Locally deleted accounts remain denied.
+
+`public.sessions` and `users.password_hash` remain legacy records for compatibility and a separately reviewed cutover/retention decision. The Clerk-backed API does not authenticate the old cookie or create new local password sessions. Clerk sessions and new credential storage remain outside PostgreSQL. Full profile-change synchronization is not implemented; see the [auth guide](../auth/clerk-setup.md).
 
 ## Design principles
 
@@ -24,8 +33,8 @@ New tables use snake_case names, UUID primary keys with PostgreSQL-generated def
 
 | Entity                   | Purpose and important columns                                                                                                                                                             | Relationships and invariants                                                                                                                                                                                                                                                |
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `users` (existing)       | Identity, email, password hash, platform role; add deletion timestamp                                                                                                                     | Keep existing IDs and auth exports; normalize email and enforce case-insensitive uniqueness after collision preflight. Soft-deleted identities must be rejected by auth before this feature is enabled.                                                                     |
-| `sessions` (existing)    | Hashed session token and expiry                                                                                                                                                           | User FK cascades session deletion; unique token hash and expiry cleanup index.                                                                                                                                                                                              |
+| `users`                  | Stable UUID, optional unique Clerk ID, normalized email/profile, local platform role and deletion state; legacy credential columns retained                                               | Business foreign keys reference the local UUID. Clerk mapping is nullable/unique, external, and application-managed; email matching alone never authorizes linking.                                                                                                         |
+| `sessions` (legacy)      | Preserved hashed token, expiry, revocation and request metadata                                                                                                                           | User FK cascades session deletion. This table no longer authenticates the Clerk-backed API; retention/cutover is a separate operation.                                                                                                                                      |
 | `workspaces`             | Tenant name, globally unique slug, `owner_user_id`, `deleted_at`, optional positive default retention days                                                                                | Owner FK restricts hard deletion. Ownership is authoritative here; owner has implicit full workspace access.                                                                                                                                                                |
 | `workspace_memberships`  | Workspace/user pair, role `ADMIN`, `EDITOR`, or `VIEWER`                                                                                                                                  | Unique pair; user and workspace FKs; roles use text with checks. Owner may also have membership, but its role cannot reduce owner authority.                                                                                                                                |
 | `forms`                  | Stable identity, workspace, creator, globally unique public slug, archive/deletion timestamps, current published version pointer                                                          | Composite `(workspace_id, id)` key; creator is attribution, ownership belongs to workspace. Pointer must reference a published version of this same form.                                                                                                                   |
@@ -46,30 +55,9 @@ The extra workspace/version columns are deliberate relational scope keys, not in
 
 ## Entity-relationship diagram
 
-```mermaid
-erDiagram
-    users ||--o{ sessions : authenticates
-    users ||--o{ workspaces : owns
-    users ||--o{ workspace_memberships : joins
-    workspaces ||--o{ workspace_memberships : includes
-    workspaces ||--o{ forms : contains
-    forms ||--o{ form_versions : versions
-    forms o|--o| form_versions : currently_publishes
-    form_versions ||--|{ form_steps : organizes
-    form_steps ||--o{ form_fields : contains
-    field_types ||--o{ form_fields : classifies
-    form_fields ||--o{ field_options : offers
-    form_versions ||--o{ form_logic_rules : branches
-    form_versions ||--o{ form_submissions : receives
-    form_submissions ||--o{ submission_answers : records
-    form_fields ||--o{ submission_answers : answers
-    submission_answers ||--o{ answer_selections : selects
-    field_options ||--o{ answer_selections : identifies
-    form_submissions ||--o{ submission_files : uploads
-    submission_answers ||--o{ answer_files : attaches
-    submission_files ||--o{ answer_files : references
-    workspaces ||--o{ workspace_audit_events : logs
-```
+Use the [current Eraser source](schema.eraser), also embedded in the [README](../../README.md#database-er-diagram-phase-1). For the earlier design, use the [pre-Clerk core ERD](history/phase-1-core.eraser) and [prototype ERD](history/prototype-0001.eraser).
+
+The current diagram distinguishes the external Clerk identity from local tables and marks sessions as legacy. The optional one-to-one identity line is an application mapping, not a SQL constraint against the external service.
 
 The current-version relationship is an optional pointer from each form; many historical published versions remain attached to that form. Workspace/version columns and individual actor relationships are omitted from the diagram for readability. A version may temporarily have zero steps while being drafted; publication validates its complete structure.
 
@@ -101,12 +89,12 @@ Do not duplicate all answers into a JSON snapshot on every submission: the immut
 - A small database transaction helper sets workspace context with parameterized `set_config(..., true)` on the same transaction connection. Workspace context is trusted input from authenticated authorization code, never directly from request payloads. Pool checkout must never retain session-level tenant context.
 - Ownership/membership checks grant owner/admin management access, editor form editing, and viewer read access. RLS supplies the tenant boundary; application permissions decide which operations each role may perform. The runtime database role must not be exposed to clients.
 - Future public endpoints resolve a public slug through narrowly scoped trusted code, check intake state, and open a workspace-scoped transaction. Knowing a workspace ID grants no application access. No anonymous database role receives broad table access.
-- The existing users/sessions remain global identity tables. Their access is restricted to server-side authentication code. Tenant RLS does not secure those tables or automatically retrofit deleted services.
+- The global users table holds application identity; the sessions table is retained legacy storage. Clerk token verification occurs in the server before local identity resolution. Tenant RLS does not secure these public identity tables; use a separately restricted server identity connection.
 - Integration tests must exercise forced RLS with a restricted role, including missing context and pool reuse. Tests run as table owner alone cannot establish isolation.
 
 ## Deletion, privacy, and audit
 
-Workspace/form deletion is soft by default. Restrict user deletion while that user owns a workspace; transfer ownership first. Creator/actor/respondent attribution can be nullable on eventual identity erasure. Do not cascade deleting a creator into forms or responses, as the legacy schema currently allows.
+Workspace/form deletion is soft by default. Restrict user deletion while that user owns a workspace; transfer ownership first. Creator/actor/respondent attribution can be nullable on eventual identity erasure. Do not cascade deleting a creator into forms or responses. The original prototype allowed that behavior; identity hardening changed the preserved legacy owner FK to RESTRICT.
 
 Published definitions are retained while submissions reference them. Submission deletion cascades only its answers, selections, attachment links, and submission-owned file metadata. Physical object deletion needs an idempotent cleanup process; a SQL cascade cannot delete an external object. Keep a deletion manifest before removing metadata so failed object deletion can be retried. Storage integration and cleanup execution are future application work.
 

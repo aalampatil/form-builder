@@ -40,30 +40,50 @@ The professional product interface and selectable respondent themes are separate
 
 ## Database ER diagram (Phase 1)
 
-Paste the code below into an **Entity Relationship Diagram** in Eraser.io. It uses [Eraser's ERD syntax](https://docs.eraser.io/erd-syntax). New tables live in the `builder` schema; users and sessions remain in `public`. See the [database architecture](docs/database/architecture.md) for full constraints and migration decisions.
+Updated through migration `0010_clerk_identity_mapping`. Paste the code below into an **Entity Relationship Diagram** in Eraser.io using [Eraser's ERD syntax](https://docs.eraser.io/erd-syntax), or copy the [standalone current ER source](docs/database/schema.eraser). See the [old-to-current design comparison](docs/database/design-evolution.md) and [current architecture](docs/database/architecture.md) for the reasons and relationships.
+
+`clerk_identity` represents the external Clerk service, not a PostgreSQL table. Its link to `users.clerk_user_id` is an application-managed identity mapping, not a SQL foreign key. The 15 core tables are in `builder`; `users` and retained legacy `sessions` are in `public`.
 
 ```text
-// Phase 1 logical schema; implemented through Drizzle migrations.
+// Current core schema through migration 0010, plus external Clerk identity.
+// clerk_identity is external; its link is not a PostgreSQL foreign key.
+// users/sessions are public tables; other local entities are in builder.
+// sessions/password_hash are legacy, not current authentication.
 // Relationships below show individual FK paths for readability.
 // Implementation uses composite workspace/version/submission FKs.
 // Nullable columns, composite uniqueness, checks, RLS, and triggers
 // are specified in docs/database/architecture.md.
 
-users {
-  id uuid pk
-  full_name varchar
-  email varchar unique
-  password_hash text
-  role text
-  deleted_at timestamptz
+clerk_identity [color: gray] {
+  id text pk
+  external_id text optional_imported_local_uuid
 }
 
-sessions {
+users {
+  id uuid pk
+  clerk_user_id text unique nullable external_reference
+  full_name varchar
+  email varchar unique
+  email_verified boolean
+  profile_image_url text nullable
+  password_hash text nullable legacy
+  role user_role
+  last_login_at timestamp nullable legacy
+  deleted_at timestamptz nullable
+  created_at timestamp nullable
+  updated_at timestamp nullable
+}
+
+// Retained for compatibility; Clerk sessions are not stored in this table.
+sessions [color: gray] {
   id uuid pk
   user_id uuid fk
   token_hash text unique
-  expires_at timestamptz
-  revoked_at timestamptz
+  ip inet nullable
+  user_agent text nullable
+  created_at timestamp
+  expires_at timestamp
+  revoked_at timestamp nullable
 }
 
 workspaces {
@@ -225,6 +245,8 @@ workspace_audit_events {
   created_at timestamptz
 }
 
+// Optional application mapping, not a cross-service SQL foreign key.
+users.clerk_user_id - clerk_identity.id
 sessions.user_id > users.id
 workspaces.owner_user_id > users.id
 workspace_memberships.workspace_id > workspaces.id
@@ -260,7 +282,7 @@ workspace_audit_events.workspace_id > workspaces.id
 workspace_audit_events.actor_user_id > users.id
 ```
 
-This diagram shows principal attributes and relationships; common creation/update timestamps and repetitive scope connectors are omitted for readability. Link tables use composite primary keys: `(answer_id, option_id)` for selections and `(answer_id, file_id)` for attachments. Each submission references an immutable published version. Draft versions may temporarily have no steps; publication requires a complete structure.
+This diagram shows the core model, one external Clerk identity node, and retained legacy sessions. Five additional legacy `public` tables are preserved but omitted here; the [historical diagrams](docs/database/design-evolution.md) show that earlier design. Common timestamps on core tables and repetitive scope connectors are omitted for readability. Link tables use composite primary keys: `(answer_id, option_id)` for selections and `(answer_id, file_id)` for attachments. Each submission references an immutable published version. Draft versions may temporarily have no steps; publication requires a complete structure. Ownership and membership continue to use the local `users.id` UUID.
 
 ## Local setup
 
