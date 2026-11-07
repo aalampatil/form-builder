@@ -1,5 +1,6 @@
 {
   "name": "@repo/database",
+  "license": "MIT",
   "version": "1.0.0",
   "scripts": {
     "check-types": "tsc --noEmit",

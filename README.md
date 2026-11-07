@@ -344,6 +344,12 @@ The production migration command stops if its file or URL is missing, overrides 
 
 Format reported files with `pnpm exec prettier --write <file>`, stage them again, and retry the commit. Re-enable hooks manually with `pnpm run prepare` when needed. Database integration tests and workspace type checks remain separate commands.
 
+## License
+
+FormCraft is licensed under the [MIT License](LICENSE). Copyright (c) 2026 aalampatil.
+
+Third-party dependencies and bundled assets remain subject to their respective licenses.
+
 ## Notes
 
 - Email is optional. If you set `SMTP_URL` + `EMAIL_FROM`, the platform will:

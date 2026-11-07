@@ -1,5 +1,6 @@
 {
   "name": "@repo/logger",
+  "license": "MIT",
   "version": "1.0.0",
   "scripts": {},
   "devDependencies": {
