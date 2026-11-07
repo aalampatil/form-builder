@@ -1,4 +1,8 @@
-# FormCraft (Typeform-style Form Builder SaaS)
+# Sumikami
+
+**墨 × 紙 · INK MEETS INTERACTION**
+
+**Make every question an experience.**
 
 Production-style form builder SaaS built on a Turborepo monorepo with **tRPC**, **Zod**, **Drizzle ORM (Postgres)**, and **Scalar (OpenAPI docs)**.
 
@@ -16,9 +20,11 @@ Start with the [project map and rough implementation plan](docs/project-plan.md)
 
 See [database architecture](docs/database/architecture.md), [operations and validation](docs/database/operations.md), and the [commit ledger](docs/database/changes.md). Form-builder APIs, submission validation services, and UI development follow this database phase.
 
-## Theme direction
+## Brand and theme direction
 
-The selected visual direction is **Japanese Ink**: warm paper, charcoal typography, restrained vermilion accents, and generous spacing. The [theme guide](docs/design/japanese-ink.md) documents light/dark tokens, typography, component states, layout, motion, accessibility, and future implementation. It includes a [palette reference](docs/design/japanese-ink-palette.svg). The guide defines the direction; applying it to the UI is a separate step.
+**Sumikami** is the product brand: artistic, futuristic, thoughtful, precise, and immersive. The [brand identity guide](docs/brand/sumikami.md) defines the ink/paper positioning, six-color palette, logo briefs, Inter/Noto Serif JP typography direction, and messaging. It includes a [brand palette reference](docs/brand/sumikami-palette.svg).
+
+The professional product interface and selectable respondent themes are separate systems. [Japanese Ink](docs/design/japanese-ink.md) is one form-theme direction; city-inspired, futuristic and custom brand themes can follow. Its [preset palette](docs/design/japanese-ink-palette.svg) is a separate initial study. These documents guide the future UI phase; no visual reimplementation or database migration is included in the branding update.
 
 ## Apps & packages
 
@@ -346,7 +352,7 @@ Format reported files with `pnpm exec prettier --write <file>`, stage them again
 
 ## License
 
-FormCraft is licensed under the [MIT License](LICENSE). Copyright (c) 2026 aalampatil.
+Sumikami is licensed under the [MIT License](LICENSE). Copyright (c) 2026 aalampatil.
 
 Third-party dependencies and bundled assets remain subject to their respective licenses.
 

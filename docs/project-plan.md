@@ -1,6 +1,6 @@
 # Project map and rough implementation plan
 
-FormCraft lets a creator build and publish a form, lets respondents fill it in, and lets an authorized team review the submissions. Workspaces connect people to forms; published versions connect form definitions to their historical answers.
+Sumikami lets a creator build and publish a form, lets respondents fill it in, and lets an authorized team review the submissions. Workspaces connect people to forms; published versions connect form definitions to their historical answers. Its brand promise is **Make every question an experience.**
 
 This document is a rough map of the whole project. It describes the intended connections and build order, rather than a list of features already working.
 
@@ -48,16 +48,16 @@ The existing Express server also exposes OpenAPI-backed REST routes at `/api`, a
 
 ## 2. What belongs where
 
-| Location               | Owns                                                                                       | Main connections                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `apps/web`             | Creator screens, respondent screens, client state, interactions, Japanese Ink presentation | Calls the API through the shared tRPC client; consumes validated response types     |
-| `apps/api`             | HTTP server, transport configuration, middleware, health endpoints                         | Mounts the shared router and creates request context                                |
-| `packages/trpc`        | API procedures, public/protected boundaries, input/output schemas, error translation       | Uses services; exposes router types to the web app                                  |
-| `packages/services`    | Business decisions and transactional workflows                                             | Checks permissions, validates form/answer semantics, then uses the database package |
-| `packages/database`    | Persistence models, SQL constraints, migrations, scoped transactions                       | Talks to PostgreSQL; protects relational integrity and tenant boundaries            |
-| `packages/logger`      | Shared server logging                                                                      | Used by API/services without logging passwords, session tokens, or answer contents  |
-| Shared config packages | TypeScript and ESLint conventions                                                          | Keep apps/packages consistent; contain no product logic                             |
-| `docs`                 | Architecture, operating procedures, visual direction, project plan                         | Explains the decisions used by all layers                                           |
+| Location               | Owns                                                                                                    | Main connections                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `apps/web`             | Creator screens, respondent screens, client state, Sumikami product identity and selectable form themes | Calls the API through the shared tRPC client; consumes validated response types     |
+| `apps/api`             | HTTP server, transport configuration, middleware, health endpoints                                      | Mounts the shared router and creates request context                                |
+| `packages/trpc`        | API procedures, public/protected boundaries, input/output schemas, error translation                    | Uses services; exposes router types to the web app                                  |
+| `packages/services`    | Business decisions and transactional workflows                                                          | Checks permissions, validates form/answer semantics, then uses the database package |
+| `packages/database`    | Persistence models, SQL constraints, migrations, scoped transactions                                    | Talks to PostgreSQL; protects relational integrity and tenant boundaries            |
+| `packages/logger`      | Shared server logging                                                                                   | Used by API/services without logging passwords, session tokens, or answer contents  |
+| Shared config packages | TypeScript and ESLint conventions                                                                       | Keep apps/packages consistent; contain no product logic                             |
+| `docs`                 | Architecture, operating procedures, visual direction, project plan                                      | Explains the decisions used by all layers                                           |
 
 Keep business rules in services and transport-specific behavior in routes. Public API input schemas should expose only editable request fields, not unrestricted database insert objects. The browser must not receive database credentials or choose an unchecked tenant context.
 
@@ -148,30 +148,35 @@ Workspace member -> permission check -> selected form
 
 Load answers for the current result page rather than every response. Keep original version context visible when definitions differ. Cross-version analytics need stable logical keys and comparable question meanings; matching labels alone are insufficient.
 
-## 5. Where Japanese Ink fits
+## 5. Where the brand and form themes fit
 
-The [Japanese Ink guide](design/japanese-ink.md) defines the visual foundation: paper/ink colors, typography, spacing, components and interaction states. It belongs primarily to `apps/web`.
+The [Sumikami brand guide](brand/sumikami.md) defines the product identity, ink/paper palette, logo direction, typography and voice. The product interface stays minimal, fast and professional. The [Japanese Ink guide](design/japanese-ink.md) defines one selectable respondent-facing preset, rather than the limits of the whole platform.
 
 ```text
-Japanese Ink specification
-        -> central semantic CSS tokens
-        -> shared UI components
-        -> dashboard / builder / respondent screens
+Sumikami brand
+        -> central product tokens and shared controls
+        -> dashboard / builder / response management
+
+Selected form theme
+        -> versioned appearance configuration
+        -> shared respondent renderer and matching builder preview
+        -> Japanese Ink / city-inspired / futuristic / custom expression
 ```
 
-The creator's dashboard light/dark preference is separate from a published form's appearance. Future form appearance settings should be validated and captured with the published version so preset changes do not silently alter historical forms. No visual theme has been applied to the UI yet.
+The creator's dashboard light/dark preference is separate from a published form's appearance. Future reusable form appearance settings should include a preset identity/version and a resolved snapshot captured at publication so preset changes do not silently alter historical forms. The existing version settings can support that future contract; a reusable-theme registry/service is not implemented yet. No brand styling or form theme has been applied to the UI in these documentation changes.
 
 ## 6. Current state and gaps
 
-| Area                    | Current state                                                                                                           |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Database foundation     | Implemented: schema, migrations, tenant/lifecycle protections, legacy preservation, and PostgreSQL integration tests    |
-| Existing authentication | User/session service code and request-context plumbing exist; complete application integration still needs verification |
-| Workspace authorization | Ownership/membership schema exists; discovery, capability enforcement, and management APIs are planned                  |
-| Form/submission APIs    | Need services and routes aligned with the versioned schema                                                              |
-| Web app                 | Next.js scaffold, tRPC/provider setup and shared UI components exist; full product journeys are planned                 |
-| Japanese Ink theme      | Specification and palette exist; visual implementation is planned                                                       |
-| Git hooks               | Husky checks staged-file formatting through lint-staged and Prettier                                                    |
+| Area                    | Current state                                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Database foundation     | Implemented: schema, migrations, tenant/lifecycle protections, legacy preservation, and PostgreSQL integration tests       |
+| Existing authentication | User/session service code and request-context plumbing exist; complete application integration still needs verification    |
+| Workspace authorization | Ownership/membership schema exists; discovery, capability enforcement, and management APIs are planned                     |
+| Form/submission APIs    | Need services and routes aligned with the versioned schema                                                                 |
+| Web app                 | Next.js scaffold, tRPC/provider setup and shared UI components exist; full product journeys are planned                    |
+| Japanese Ink theme      | Specification and palette exist; visual implementation is planned                                                          |
+| Sumikami brand          | Product identity, palette, logo briefs and typography direction are documented; logo assets and UI integration are planned |
+| Git hooks               | Husky checks staged-file formatting through lint-staged and Prettier                                                       |
 
 Some existing router and user-service files still reference removed form/response or Google OAuth modules. Repair those references before treating the whole application as buildable. Presence of a route file does not establish a working end-to-end feature. The database test result is separate from the full application build.
 
@@ -179,14 +184,14 @@ Database runtime credentials, forced RLS, transaction context, privileged migrat
 
 ## 7. Rough build order
 
-| Stage                                        | Work                                                                                                                                         | Completion checkpoint                                                                             |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 1. Database foundation                       | Versioned definitions, tenant scope, answer integrity, migrations and tests                                                                  | Completed foundation; deployment-specific rollout still follows the operations guide              |
-| 2. Application baseline and workspace access | Repair stale imports, verify sign-in/session behavior, provision restricted connections, implement workspace discovery and capability checks | A signed-in user can access only authorized workspace operations; application checks pass         |
-| 3. Draft and publishing services             | Typed API contracts, form CRUD, field/step editing, revision checks, full-definition validation and publication                              | A creator publishes a valid form and can edit a new draft without changing that published version |
-| 4. Public intake and response retrieval      | Safe slug resolution, respondent access/continuation rules, answer validation, completion, idempotency and paginated results                 | A respondent submits once despite retries, and an authorized creator reads the stored answers     |
-| 5. First usable interface                    | Build the dashboard, basic builder, respondent flow and results screen using Japanese Ink components                                         | The first product journey works through the browser in both supported theme modes                 |
-| 6. Richer product capabilities               | Deeper conditional editing, file storage/cleanup, analytics, appearance controls and team management                                         | Add each capability with its own validated user journey and permissions                           |
+| Stage                                        | Work                                                                                                                                            | Completion checkpoint                                                                             |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1. Database foundation                       | Versioned definitions, tenant scope, answer integrity, migrations and tests                                                                     | Completed foundation; deployment-specific rollout still follows the operations guide              |
+| 2. Application baseline and workspace access | Repair stale imports, verify sign-in/session behavior, provision restricted connections, implement workspace discovery and capability checks    | A signed-in user can access only authorized workspace operations; application checks pass         |
+| 3. Draft and publishing services             | Typed API contracts, form CRUD, field/step editing, revision checks, full-definition validation and publication                                 | A creator publishes a valid form and can edit a new draft without changing that published version |
+| 4. Public intake and response retrieval      | Safe slug resolution, respondent access/continuation rules, answer validation, completion, idempotency and paginated results                    | A respondent submits once despite retries, and an authorized creator reads the stored answers     |
+| 5. First usable interface                    | Build the dashboard, basic builder, respondent flow and results screen with Sumikami product components and an initial Japanese Ink form preset | The first product journey works through the browser in both supported product light/dark modes    |
+| 6. Richer product capabilities               | Deeper conditional editing, file storage/cleanup, analytics, appearance controls and team management                                            | Add each capability with its own validated user journey and permissions                           |
 
 Build stages 2–5 as small connected slices. For example, implement one text question from draft edit through publish, browser submission, and response detail before adding every question type or a large collection of screens.
 
@@ -203,5 +208,7 @@ File bytes will eventually require private object storage linked to the existing
 - [Database architecture and relationships](database/architecture.md)
 - [Database operations, rollout and known limits](database/operations.md)
 - [Database change ledger and validation record](database/changes.md)
+- [Sumikami brand identity](brand/sumikami.md)
+- [Sumikami brand palette](brand/sumikami-palette.svg)
 - [Japanese Ink theme specification](design/japanese-ink.md)
 - [Japanese Ink palette](design/japanese-ink-palette.svg)

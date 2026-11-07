@@ -1,8 +1,10 @@
 # Japanese Ink theme
 
-Status: selected visual direction; initial specification for future UI implementation.
+Status: initial selectable form-theme specification for future UI implementation. The [Sumikami brand guide](../brand/sumikami.md) defines the product identity and takes precedence for product chrome, brand colors and typography.
 
-Japanese Ink gives FormCraft a calm, deliberate character through warm paper surfaces, charcoal typography, generous space, and small vermilion accents. The form content remains the focus. This guide defines the application shell, builder, and default respondent experience; individual form customization can extend it later.
+Japanese Ink gives a Sumikami form a calm, deliberate character through warm paper surfaces, charcoal typography, generous space, and small vermilion accents. The form content remains the focus. This guide defines one respondent-facing preset and its preview in the builder, rather than requiring every Sumikami form to look Japanese.
+
+The light/dark values and SVG below remain the preset's initial color study; they are not the authoritative six-color Sumikami brand palette. Dashboard/builder composition notes are supporting UX guidance, with the brand guide governing the surrounding product interface. Other presets can have substantially different visual expression.
 
 This is a design specification. The current UI still uses its starter styles. No theme renderer, new font dependency, asset download, or database migration is introduced by this document.
 
@@ -57,7 +59,7 @@ Charts should use a restrained categorical set derived from ink, vermilion, moss
 
 ## Typography
 
-Reuse the bundled Geist Sans and Geist Mono files in `apps/web/app/fonts`. Use a system serif for display text initially; this avoids another font dependency. A dedicated display face can be evaluated later against licensing, language coverage, loading cost, and readability.
+The current scaffold bundles Geist Sans and Geist Mono in `apps/web/app/fonts`; the table below records that interim implementation baseline. The selected Sumikami direction is Inter for interface text and ordinary questions, with Noto Serif JP for suitable editorial/Japanese accents. Apply those choices in the future UI phase after font integration review. Georgia/system serif and bundled Geist remain temporary fallbacks, not competing brand-font selections.
 
 | Role                                 | Font stack                                      | Suggested size / line height | Weight |
 | ------------------------------------ | ----------------------------------------------- | ---------------------------- | ------ |
@@ -121,7 +123,7 @@ On narrow screens, show one primary area at a time and move structure/settings i
 
 Use a focused content column, strong question hierarchy, persistent field labels, and a clear next/submit action. Progress should communicate position without dominating the page. Preserve entered answers when validation fails, and move focus deliberately when navigating steps. Completion uses a concise confirmation; animation is optional.
 
-The default form experience inherits Japanese Ink. Future author customization must preserve readable text/control combinations and accessible focus/error states. A theme preview should use the same rendering rules as the published form.
+Japanese Ink may be offered as a default or selectable preset; do not assume that all respondent experiences inherit it. Future author customization must preserve readable text/control combinations and accessible focus/error states. A theme preview should use the same rendering rules as the published form.
 
 ## Motion
 
