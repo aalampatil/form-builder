@@ -1,5 +1,7 @@
 # Database implementation and operations
 
+Deployment record: [production migration completed on 2026-11-07](migration-runs/2026-11-07.md). It records the empty-database preflight, all ten applied migrations, verification results, and the temporary DNS workaround used for that run.
+
 ## Implemented layout
 
 The new schema lives in `builder`; existing identity and compatibility tables remain in `public`. Import the new tables from `@repo/database/schema`. Compatibility exports are prefixed `legacy`, such as `legacyFormsTable`, and must not be used for new product writes. Drizzle's insert/select types are exported with each model.
