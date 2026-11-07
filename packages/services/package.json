@@ -6,11 +6,17 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
     "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.16.0",
     "dotenv-cli": "^11.0.0",
+    "drizzle-orm": "^0.45.1",
+    "pg": "^8.16.3",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@clerk/backend": "^3.27.0",
     "@repo/database": "workspace:*",
     "@repo/logger": "workspace:*",
     "bcryptjs": "^3.0.2",
