@@ -71,6 +71,13 @@
       "when": 1793979876832,
       "tag": "0009_guard_cascade_and_expiry",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794041613268,
+      "tag": "0010_clerk_identity_mapping",
+      "breakpoints": true
     }
   ]
 }

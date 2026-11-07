@@ -17,6 +17,8 @@ export const usersTable = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    // Clerk is an external identity; application UUIDs and ownership stay stable.
+    clerkUserId: text("clerk_user_id").unique(),
 
     fullName: varchar("full_name", { length: 80 }).notNull(),
 
