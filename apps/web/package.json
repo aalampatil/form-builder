@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint --max-warnings 0",
-    "check-types": "next typegen && tsc --noEmit"
+    "check-types": "next typegen && tsc --noEmit",
+    "test:auth:e2e": "dotenv -e .env.local --no-expand -o -- playwright test"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.25",

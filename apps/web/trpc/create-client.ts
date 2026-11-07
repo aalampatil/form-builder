@@ -3,6 +3,7 @@ import { env } from "~/env.js";
 
 interface CreateTRPCHttpBatchClientClientOpts {
   enableStreaming?: boolean;
+  getToken?: () => Promise<string | null>;
 }
 
 export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClientClientOpts) => {
@@ -24,6 +25,10 @@ export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClient
 
   return c({
     url,
+    async headers() {
+      const token = await opts?.getToken?.();
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    },
     fetch(url, options) {
       return fetch(url, {
         ...options,

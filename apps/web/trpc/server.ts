@@ -1,11 +1,13 @@
+import "server-only";
+import { auth } from "@clerk/nextjs/server";
 import type { ServerRouter } from "@repo/trpc/client";
 import { createTRPCProxyClient } from "@repo/trpc/client";
 import { createTRPCHttpBatchClientClient } from "~/trpc/create-client";
 
-export const api = createTRPCProxyClient<ServerRouter>({
-  links: [createTRPCHttpBatchClientClient()],
-});
-
-export const apiStreaming = createTRPCProxyClient<ServerRouter>({
-  links: [createTRPCHttpBatchClientClient({ enableStreaming: true })],
-});
+// Create per request: never cache one user's token or API client globally.
+export async function createServerApi() {
+  const { getToken } = await auth();
+  return createTRPCProxyClient<ServerRouter>({
+    links: [createTRPCHttpBatchClientClient({ getToken })],
+  });
+}
