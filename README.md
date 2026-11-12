@@ -6,6 +6,8 @@
 
 Production-style form builder SaaS built on a Turborepo monorepo with **tRPC**, **Zod**, **Drizzle ORM (Postgres)**, and **Scalar (OpenAPI docs)**.
 
+[Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [MIT License](LICENSE)
+
 Start with the [project map and rough implementation plan](docs/project-plan.md) to see how the apps, API, services, database, theme, and user journeys connect, along with the current gaps and build order.
 
 ## Phase 1: database foundation
@@ -286,6 +288,8 @@ This diagram shows the core model, one external Clerk identity node, and retaine
 
 ## Local setup
 
+Prerequisites: Node.js **20.9 or newer**, **pnpm 9.0.0** (the version pinned in `package.json`), Docker with Compose, and development Clerk keys for authenticated flows. Use a local development database. See the [Clerk setup guide](docs/auth/clerk-setup.md) for the authentication configuration.
+
 ### 1) Start Postgres
 
 ```bash
@@ -303,9 +307,11 @@ cp .env.example .env
 Also copy per-app env files (these are what `pnpm dev` uses):
 
 ```bash
-cp apps/api/.env.example apps/api/.env
+cp apps/api/.env.example apps/api/.env.local
 cp apps/web/.env.local.example apps/web/.env.local
 ```
+
+Set `DATABASE_URL` in the root `.env` and API `.env.local` to your local database. Add `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, and `AUTHORIZED_PARTIES` to the API file, and `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` to the web file, using keys from the same development instance. Follow the [configuration table](docs/auth/clerk-setup.md#local-resources-and-commands) for origins and redirect settings. Keep these files and their values out of Git.
 
 ### 3) Install deps
 
@@ -342,13 +348,18 @@ The optional seed creates a `development` workspace and an unpublished `developm
 - Local: `http://localhost:8000/docs`
 - OpenAPI JSON: `http://localhost:8000/openapi.json`
 
-## Deployment / submission links
+## Project links
 
-Fill these in before submitting to judges:
+- [Source repository](https://github.com/aalampatil/sumi-kami)
+- [Bug reports and feature requests](https://github.com/aalampatil/sumi-kami/issues/new/choose)
+- [Development roadmap](docs/project-plan.md)
+- API reference: `http://localhost:8000/docs` when running locally
 
-- Demo: `TODO_DEMO_URL`
-- Public GitHub repo: `TODO_GITHUB_REPO_URL`
-- API docs: `TODO_SCALAR_DOCS_URL`
+## Community
+
+Contributions to code, documentation, accessibility, and bug reports are welcome. Start with the [contribution guide](CONTRIBUTING.md) for setup, checks, and the pull request process. Participation follows our [code of conduct](CODE_OF_CONDUCT.md).
+
+Use the issue templates for bugs and feature requests. Report vulnerabilities privately using the [security policy](SECURITY.md).
 
 ## Important commands
 

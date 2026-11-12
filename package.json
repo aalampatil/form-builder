@@ -1,5 +1,6 @@
 {
-  "name": "trpc-monorepo",
+  "name": "sumi-kami",
+  "description": "Sumikami is a form builder SaaS with a Next.js dashboard, an Express/tRPC API, and a versioned PostgreSQL data model.",
   "license": "MIT",
   "private": true,
   "scripts": {

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/aalampatil/sumi-kami/blob/main/SECURITY.md
+    about: Follow the security policy to report vulnerabilities privately.
+  - name: Contribution and setup help
+    url: https://github.com/aalampatil/sumi-kami/blob/main/CONTRIBUTING.md
+    about: Read the setup instructions, validation commands, and contribution process.

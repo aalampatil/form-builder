@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest a feature or improvement for Sumikami.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check existing issues and the [project plan](https://github.com/aalampatil/sumi-kami/blob/main/docs/project-plan.md) first.
+        Describe the user need and use synthetic examples without secrets or personal data.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or user need
+      description: Who needs this, and what are they trying to accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the experience and what would make this feature successful.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds or other approaches you considered.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Include relevant mockups, accessibility needs, or technical constraints.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and checked the project plan.
+          required: true
+        - label: I agree to follow the [code of conduct](https://github.com/aalampatil/sumi-kami/blob/main/CODE_OF_CONDUCT.md).
+          required: true

@@ -1,0 +1,65 @@
+name: Bug report
+description: Report a reproducible problem in Sumikami.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues before reporting a bug. For suspected vulnerabilities, follow our [security policy](https://github.com/aalampatil/sumi-kami/blob/main/SECURITY.md) privately.
+        Remove secrets, session tokens, personal information, and real form responses from all examples and attachments.
+  - type: input
+    id: revision
+    attributes:
+      label: Commit or version
+      description: Which commit or version are you running? Use git rev-parse --short HEAD for a local checkout.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the problem and which part of the app is affected.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal example using synthetic data.
+      placeholder: |
+        1. Start the app with...
+        2. Go to...
+        3. Perform...
+        4. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include OS, Node.js and pnpm versions, browser, and PostgreSQL version where relevant. Do not paste environment file contents.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or screenshots
+      description: Add relevant errors, redacted screenshots, or a minimal reproduction link. Review attachments for private data.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for this problem.
+          required: true
+        - label: I removed secrets and personal data from this report and its attachments.
+          required: true
+        - label: I agree to follow the [code of conduct](https://github.com/aalampatil/sumi-kami/blob/main/CODE_OF_CONDUCT.md).
+          required: true
